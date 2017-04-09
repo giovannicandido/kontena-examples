@@ -1,0 +1,9 @@
+stack: common
+version: 0.1.0
+services:
+  internet_lb:
+    image: kontena/lb:latest
+    ports:
+      - 80:80
+    deploy:
+      strategy: daemon

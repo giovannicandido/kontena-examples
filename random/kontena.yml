@@ -1,0 +1,10 @@
+stack: random
+version: 0.1.0
+services:
+  api:
+    image: giovannicandido/kontena-loadbalance-teste
+    links:
+      - common/internet_lb
+    environment:
+      - KONTENA_LB_INTERNAL_PORT=50000
+      - KONTENA_LB_VIRTUAL_HOSTS=random.local,www.random.local

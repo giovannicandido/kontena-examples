@@ -1,0 +1,35 @@
+stack: wordpress
+version: 0.1.0
+variables:
+  postgres_password:
+    type: string
+    min_length: 10
+    from:
+      vault: ${STACK}-mysql-root-password
+      env: MYSQL_ROOT_PASSWORD
+      prompt: Enter the root password for mysql or leave empty to generate
+      random_string: 16
+    to:
+      vault: ${STACK}-mysql-root-password
+services:
+  wordpress:
+    image: wordpress:4.1
+    links:
+      - mysql:wordpress-mysql
+      - common/internet_lb
+    environment:
+      - WORDPRESS_DB_HOST=mysql.${STACK}.${GRID}.kontena.local
+      - KONTENA_LB_INTERNAL_PORT=80
+      - KONTENA_LB_VIRTUAL_HOSTS=wordpress.local,www.wordpress.local
+    secrets:
+      - secret: ${STACK}-mysql-root-password
+        name: WORDPRESS_DB_PASSWORD
+        type: env
+    env_file: wordpress.env
+  mysql:
+    image: mariadb:5.5
+    stateful: true
+    secrets:
+      - secret: ${STACK}-mysql-root-password
+        name: MYSQL_ROOT_PASSWORD
+        type: env
